@@ -7,31 +7,37 @@ class App extends Component
 {
   state = {
     persons: [
-      { name: 'Joel', age: 25},
-      { name: 'Manu', age: 28},
-      { name: 'Cindy', age: 26}
+      { id: '1', name: 'Joel', age: 25},
+      { id: '2', name: 'Manu', age: 28},
+      { id: '3', name: 'Cindy', age: 26}
     ],
     otherState: 'some other value',
     showPersons: false
   }
 
-  nameChangeHandler = (event) => {
-    this.setState( 
-      {
-        persons: [
-          { id: '1', name: 'Joel Luong', age: 25},
-          { id: '2', name: event.target.value, age: 28},
-          { id: '3', name: 'Cindy', age: 24}
-        ]
-      }
-     )
+  nameChangeHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {return p.id === id});
+
+    const person = {
+      ...this.state.persons[personIndex] // just copy single element
+    };
+
+    //const person = Object.assign({}, this.state.persons[personIndex]);
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons]; // copy whole array
+
+    persons[personIndex] = person;
+
+    this.setState({persons: persons});
   }
 
   deletePersonHandler = (personIndex) => {
     // const persons = this.state.persons;
     const persons = [...this.state.persons]; // copy the array
     persons.splice(personIndex, 1);
-    this.setState({persons: persons})
+    this.setState({persons: persons});
   }
 
   togglePersonHandler = () => {
@@ -57,11 +63,12 @@ class App extends Component
           {this.state.persons.map((person, index) => {
             return <Person
               click={this.deletePersonHandler.bind(index)}
-              key={person.key} 
+              key={person.id} 
               name={person.name} 
-              age={person.age}/>
+              age={person.age}
+              changed = {(event) => this.nameChangeHandler(event, person.id)}/>
           })}
-
+            {/* this.nameChangeHandler.bind(this, person.Id) */}
             {/* <Person 
               name={this.state.persons[0].name}
               age={this.state.persons[0].age} />
